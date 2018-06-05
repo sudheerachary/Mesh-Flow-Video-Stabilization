@@ -59,5 +59,6 @@ A vertex profile represents the motion of its neighboring image regions. MeshFlo
 
 ## Acknowledgments
 
-* [Mesh flow minimum latency video stabilization](http://www.liushuaicheng.org/eccv2016/meshflow.pdf)
-* [Mesh flow video denoising](https://github.com/AlbusPeter/MeshFlow_Video_Denoising)
+* [MeshFlow: Minimum Latency Online Video Stabilization](http://www.liushuaicheng.org/eccv2016/meshflow.pdf)
+* [MeshFlow Video Denoising](https://github.com/AlbusPeter/MeshFlow_Video_Denoising)
+* [SteadyFlow: Spatially Smooth Optical Flow for Video Stabilization](http://www.liushuaicheng.org/CVPR2014/SteadyFlow.pdf)
