@@ -11,6 +11,7 @@ The MeshFlow is a spatial smooth sparse motion field with motion vectors only at
     - ```
       python Stabilization.py <path_to_video>
       ```
+  - To run experiments ipython-notebook is present in `src/mesh_flow.ipynb`
   - The stable output video is saved to `home` directory of cloned repository
 
 ### Prerequisites
