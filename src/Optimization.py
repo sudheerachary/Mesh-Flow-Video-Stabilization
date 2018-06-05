@@ -63,3 +63,46 @@ def parallel_optimize(vertex_profiles):
     args = list(product(range(vertex_profiles.shape[0]), range(vertex_profiles.shape[1])))
     paths = pool.map(optimize_path, [vertex_profiles[arg[0], arg[1]] for arg in args])
     return paths
+
+
+def cvx_optimize_path(c, buffer_size=0, window_size=6):
+    """
+    @param: c is original camera trajectory
+    @param: window_size is the hyper-parameter for the smoothness term
+    
+    
+    Returns:
+            returns an optimized gaussian smooth camera trajectory 
+    """
+    lambda_t = 100
+    if window_size > c.shape[2]:
+        window_size = c.shape[2]
+    
+    p = np.empty_like(c)
+    for i in range(c.shape[0]):
+        for j in range(c.shape[1]):
+            P = Variable(c.shape[2])
+            for t in range(c.shape[2]):
+                
+                # first term for optimised path to be close to camera path
+                path_term = (P[t]-c[i, j, t])**2
+
+                # second term for smoothness using gaussian weights
+                for r in range(window_size):
+                    if t-r < 0:
+                        break
+                    w = gauss(t, t-r, window_size)
+                    gauss_weight = w*(P[t]-P[t-r])**2
+                    if r == 0:
+                        gauss_term = gauss_weight
+                    else:
+                        gauss_term += gauss_weight
+
+                if t == 0:
+                    objective = path_term + lambda_t*gauss_term
+                else:
+                    objective += path_term + lambda_t*gauss_term
+            prob = Problem(Minimize(objective))
+            prob.solve()
+            p[i, j, :] = np.asarray(P.value).reshape(-1)
+    return p

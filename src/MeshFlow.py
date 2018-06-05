@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
-from cvxpy import *
 from tqdm import tqdm
 from time import time
-import matplotlib.pyplot as plt
 from scipy.signal import medfilt
 
+# block of size in mesh
+PIXELS = 16
+
+# motion propogation radius
+RADIUS = 300
 
 def point_transform(H, pt):
     """
@@ -82,13 +85,6 @@ def motion_propagate(old_points, new_points, old_frame):
             y_motion_mesh[key] = y_motion[key]+temp_y_motion[key][len(temp_y_motion[key])/2]
         except KeyError:
             y_motion_mesh[key] = y_motion[key]
-    
-    # draw new motion vectors
-    for i in range(x_motion_mesh.shape[0]):
-        for j in range(x_motion_mesh.shape[1]):
-            theta = np.arctan2(y_motion_mesh[i, j], x_motion_mesh[i, j])
-            cv2.line(old_frame, (j*PIXELS, i*PIXELS), (int(j*PIXELS+3*np.cos(theta)), int(i*PIXELS+3*np.sin(theta))), 1)
-    cv2.imwrite('before_old_frames/'+str(frame_num)+'.jpg', old_frame)
     
     # apply second median filter (f-2) over the motion mesh for outliers
     x_motion_mesh = medfilt(x_motion_mesh, kernel_size=[3, 3])

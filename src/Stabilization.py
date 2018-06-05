@@ -1,6 +1,9 @@
 import sys
 import cv2
+import time
 import numpy as np
+from tqdm import tqdm
+import matplotlib.pyplot as plt
 from Optimization import optimize_path
 from MeshFlow import motion_propagate
 from MeshFlow import mesh_warp_frame
@@ -11,6 +14,15 @@ PIXELS = 16
 
 # motion propogation radius
 RADIUS = 300
+
+def measure_performance(method):
+    def timed(*args, **kwargs):
+        start_time = time.time()
+        result = method(*args, **kwargs)
+        end_time = time.time()
+        print method.__name__+' has taken: '+str(end_time-start_time)+' sec'
+        return result
+    return timed
 
 @measure_performance
 def read_video(cap):
@@ -38,6 +50,7 @@ def read_video(cap):
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
     ret, old_frame = cap.read()
     old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     # preserve aspect ratio
     global HORIZONTAL_BORDER
@@ -90,7 +103,7 @@ def read_video(cap):
         old_gray = frame_gray.copy()
 
     bar.close()
-    return x_motion_meshes, y_motion_meshes, x_paths, y_paths
+    return [x_motion_meshes, y_motion_meshes, x_paths, y_paths]
 
 
 @measure_performance
@@ -109,7 +122,7 @@ def stabilize(x_paths, y_paths):
     # optimize for smooth vertex profiles
     sx_paths = optimize_path(x_paths)
     sy_paths = optimize_path(y_paths)
-    return sx_paths, sy_paths
+    return [sx_paths, sy_paths]
 
 
 def plot_vertex_profiles(x_paths, sx_paths):
@@ -127,7 +140,7 @@ def plot_vertex_profiles(x_paths, sx_paths):
         for j in range(0, x_paths.shape[1], 10):
             plt.plot(x_paths[i, j, :])
             plt.plot(sx_paths[i, j, :])
-            plt.savefig('results/'+str(i)+'_'+str(j)+'.png')
+            plt.savefig('../results/paths/'+str(i)+'_'+str(j)+'.png')
             plt.clf()
 
 
@@ -183,8 +196,9 @@ def generate_stabilized_video(cap, x_motion_meshes, y_motion_meshes, new_x_motio
     
     # generate stabilized video
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('stable.avi', fourcc, frame_rate, (2*frame_width, frame_height))
+    out = cv2.VideoWriter('../stable.avi', fourcc, frame_rate, (2*frame_width, frame_height))
 
+    frame_num = 0
     bar = tqdm(total=frame_count)
     while frame_num < frame_count:
         try:
@@ -208,14 +222,14 @@ def generate_stabilized_video(cap, x_motion_meshes, y_motion_meshes, new_x_motio
                 for j in range(x_motion_mesh.shape[1]):
                     theta = np.arctan2(y_motion_mesh[i, j], x_motion_mesh[i, j])
                     cv2.line(frame, (j*PIXELS, i*PIXELS), (int(j*PIXELS+r*np.cos(theta)), int(i*PIXELS+r*np.sin(theta))), 1)
-            cv2.imwrite('results/old_motion_vectors/'+str(frame_num)+'.jpg', frame)
+            cv2.imwrite('../results/old_motion_vectors/'+str(frame_num)+'.jpg', frame)
 
             # draw new motion vectors
             for i in range(new_x_motion_mesh.shape[0]):
                 for j in range(new_x_motion_mesh.shape[1]):
                     theta = np.arctan2(new_y_motion_mesh[i, j], new_x_motion_mesh[i, j])
                     cv2.line(new_frame, (j*PIXELS, i*PIXELS), (int(j*PIXELS+r*np.cos(theta)), int(i*PIXELS+r*np.sin(theta))), 1)
-            cv2.imwrite('results/new_motion_vectors/'+str(frame_num)+'.jpg', new_frame)
+            cv2.imwrite('../results/new_motion_vectors/'+str(frame_num)+'.jpg', new_frame)
 
             frame_num += 1
             bar.update(1)
@@ -229,9 +243,7 @@ def generate_stabilized_video(cap, x_motion_meshes, y_motion_meshes, new_x_motio
 
 if __name__ == '__main__':
     
-    # measure time required
     start_time = time.time()
-
     # get video properties
     file_name = sys.argv[1]
     cap = cv2.VideoCapture(file_name)
@@ -250,5 +262,4 @@ if __name__ == '__main__':
 
     # apply updated mesh warps & save the result
     generate_stabilized_video(cap, x_motion_meshes, y_motion_meshes, new_x_motion_meshes, new_y_motion_meshes)
-
-    print 'Time elapsed: ', str(time()-start_time)
+    print 'Time elapsed: ', str(time.time()-start_time)
