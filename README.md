@@ -18,17 +18,17 @@ The MeshFlow is a spatial smooth sparse motion field with motion vectors only at
 
   - Required Packages:
   
-    - opencv:  `pip install --user opencv-python`
+    - **opencv**:  `pip install --user opencv-python`
   
-    - numpy:  `pip install --user numpy`
+    - **numpy**:  `pip install --user numpy`
     
-    - scipy: `pip install --user scipy`
+    - **scipy**: `pip install --user scipy`
     
-    - tqdm: `pip install --user tqdm`
+    - **tqdm**: `pip install --user tqdm`
   
   - Optional Packages:
     
-    - cvxpy: `pip install --user cvxpy`
+    - **cvxpy**: `pip install --user cvxpy`
 
 ## Motion Propagation
 
@@ -54,8 +54,8 @@ A vertex profile represents the motion of its neighboring image regions. MeshFlo
 
 ![path](https://github.com/sudheerachary/Mesh-Flow-Video-Stabilization/blob/master/results/paths/0_30.png)
 
-  - green is the optimized result
-  - blue is the motion vector accumulation
+  - **Green** is the optimized result
+  - **Blue** is the motion vector accumulation
   - vertex profile paths are dumped into `results/paths`
 
 ## Acknowledgments
