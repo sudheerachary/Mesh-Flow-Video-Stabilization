@@ -1,5 +1,7 @@
 ![stable-output](https://github.com/sudheerachary/Mesh-Flow-Video-Stabilization/blob/master/results/sample.gif)
 
+[![HitCount](http://hits.dwyl.io/sudheerachary/Mesh-Flow-Video-Stabilization.svg)](http://hits.dwyl.io/sudheerachary/Mesh-Flow-Video-Stabilization)
+
 # Mesh-Flow-Video-Stabilization
 
 The MeshFlow is a spatial smooth sparse motion field with motion vectors only at the mesh vertexes. The MeshFlow is produced by assigning each vertex an unique motion vector via two median filters. The path smoothing is conducted on the vertex profiles, which are motion vectors collected at the same vertex location in the MeshFlow over time. The profiles are smoothed adaptively by a novel smoothing technique, namely the Predicted Adaptive Path Smoothing (PAPS), which only uses motions from the past.
