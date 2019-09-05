@@ -4,7 +4,7 @@ import time
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from Optimization import optimize_path
+from Optimization import real_time_optimize_path
 from MeshFlow import motion_propagate
 from MeshFlow import mesh_warp_frame
 from MeshFlow import generate_vertex_profiles
@@ -120,8 +120,8 @@ def stabilize(x_paths, y_paths):
     """
 
     # optimize for smooth vertex profiles
-    sx_paths = optimize_path(x_paths)
-    sy_paths = optimize_path(y_paths)
+    sx_paths = real_time_optimize_path(x_paths)
+    sy_paths = real_time_optimize_path(y_paths)
     return [sx_paths, sy_paths]
 
 
