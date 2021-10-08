@@ -40,7 +40,7 @@ def motion_propagate(old_points, new_points, old_frame):
     """
     # spreads motion over the mesh for the old_frame
     x_motion = {}; y_motion = {};
-    cols, rows = old_frame.shape[1]/PIXELS, old_frame.shape[0]/PIXELS
+    cols, rows = int(old_frame.shape[1]/PIXELS), int(old_frame.shape[0]/PIXELS)
     
     # pre-warping with global homography
     H, _ = cv2.findHomography(old_points, new_points, cv2.RANSAC)
@@ -77,12 +77,12 @@ def motion_propagate(old_points, new_points, old_frame):
     for key in x_motion.keys():
         try:
             temp_x_motion[key].sort()
-            x_motion_mesh[key] = x_motion[key]+temp_x_motion[key][len(temp_x_motion[key])/2]
+            x_motion_mesh[key] = x_motion[key]+temp_x_motion[key][int(len(temp_x_motion[key])/2)]
         except KeyError:
             x_motion_mesh[key] = x_motion[key]
         try:
             temp_y_motion[key].sort()
-            y_motion_mesh[key] = y_motion[key]+temp_y_motion[key][len(temp_y_motion[key])/2]
+            y_motion_mesh[key] = y_motion[key]+temp_y_motion[key][int(len(temp_y_motion[key])/2)]
         except KeyError:
             y_motion_mesh[key] = y_motion[key]
     
